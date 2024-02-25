@@ -11,6 +11,16 @@
       font-family: 'Noto Sans JP', sans-serif;
 　　　　background-color: #b0c4de;
       }
+    <!-- モーダルのマークアップ -->
+  <div id="dateModal" class="hidden modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>日付の選択肢</h3>
+    <button class="option" data-option="当直のみ">当直のみ</button>
+    <button class="option" data-option="日直のみ">日直のみ</button>
+    <button class="option" data-option="両方">両方</button>
+  </div>
+</div>
     </body>
     
     .date:hover {
@@ -68,6 +78,12 @@
       background-color: #fbd38d; /* ホバー時の背景色 */
       cursor: pointer;
     }
+
+    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+
     #generate-url {
       display: inline-block;
       background-color: #7B68EE
@@ -179,6 +195,37 @@
   
   // window.location.href = mailtoLink;
 });
+// モーダル関連の処理
+const modal = document.getElementById('dateModal');
+const closeBtn = modal.querySelector('.close');
+
+document.querySelectorAll('.calendar-grid .date').forEach(date => {
+  date.addEventListener('click', function() {
+    modal.style.display = 'block';
+    const selectedDate = this.textContent;
+    
+    modal.querySelectorAll('.option').forEach(option => {
+      option.onclick = () => {
+        const choice = option.getAttribute('data-option');
+        console.log(`選択: ${choice} for date ${selectedDate}`);
+        // ここで選択をサーバーに送信する処理を追加
+        modal.style.display = 'none';
+      };
+    });
+  });
+});
+
+// モーダルのクローズボタン
+closeBtn.onclick = function() {
+  modal.style.display = 'none';
+};
+
+// モーダル外をクリックしたときに閉じる
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = 'none';
+  }
+};
 
     });
   </script>
@@ -230,76 +277,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   const nameSelect = document.getElementById('name-select');
   const otherNameInput = document.getElementById('other-name-input');
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  let selections = new Map(); // 日付と選択肢のマップ
 
-  const dates = document.querySelectorAll('.date'); // 日付要素を取得
-  dates.forEach(date => {
-    const day = new Date(date.getAttribute('data-date')).getDay();
-    if (day === 6 || day === 0) { // 土曜日または日曜日の場合
-      date.addEventListener('click', function() {
-        toggleDutyButtons(date); // 「当」と「日」のボタンを切り替える関数
-      });
-    }
-  });
-
-  function toggleDutyButtons(dateElement) {
-    let dutyButtonsContainer = dateElement.querySelector('.duty-buttons');
-    if (!dutyButtonsContainer) {
-      dutyButtonsContainer = document.createElement('div');
-      dutyButtonsContainer.className = 'duty-buttons';
-      dutyButtonsContainer.innerHTML = `
-        <button class="duty-btn" data-duty="当">当</button>
-        <button class="duty-btn" data-duty="日">日</button>
-      `;
-      dateElement.appendChild(dutyButtonsContainer);
-
-      dutyButtonsContainer.querySelectorAll('.duty-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          this.classList.toggle('selected');
-          updateSelections(dateElement.getAttribute('data-date'), this.getAttribute('data-duty'));
-        });
-      });
-    } else {
-      dutyButtonsContainer.style.display = dutyButtonsContainer.style.display === 'none' ? 'block' : 'none';
-    }
-  }
-
-  function updateSelections(date, duty) {
-    let currentSelection = selections.get(date) || [];
-    if (currentSelection.includes(duty)) {
-      currentSelection = currentSelection.filter(d => d !== duty);
-    } else {
-      currentSelection.push(duty);
-    }
-    selections.set(date, currentSelection);
-  }
-
-  document.getElementById('generate-url').addEventListener('click', function(event) {
-    event.preventDefault();
-    if (!validateSelections()) {
-      alert('すべての必須選択が完了していません。');
-      return;
-    }
-
-    // 選択状態をフォームに追加
-    const selectionsJson = JSON.stringify(Array.from(selections.entries()));
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = 'selections';
-    hiddenInput.value = selectionsJson;
-    document.getElementById('dutyForm').appendChild(hiddenInput);
-
-    // フォーム送信
-    document.getElementById('dutyForm').submit();
-  });
-
-  function validateSelections() {
-    // ここで選択状態の検証ロジックを実装
-    return true; // すべての検証が通ればtrueを返す
-  }
-});
   // プルダウンメニューの選択が変更されたときのイベントリスナーを追加
   nameSelect.addEventListener('change', function() {
     if (this.value === 'その他') {
@@ -389,4 +367,4 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </body>
-</html>　
+</html>
