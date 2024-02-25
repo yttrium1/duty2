@@ -70,7 +70,12 @@
       background-color: #fbd38d; /* ホバー時の背景色 */
       cursor: pointer;
     }
-    #generate-url {
+
+   .modal {
+    display: none;
+    }
+  
+   #generate-url {
       display: inline-block;
       background-color: #7B68EE
       color: white;
@@ -80,8 +85,51 @@
       margin-bottom: 8px;
     }
   </style>
+<!-- モーダルのマークアップ -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>日付の選択肢</h2>
+    <!-- モーダルの中身 -->
+    <button class="option" data-option="当直のみ">当直のみ</button>
+    <button class="option" data-option="日直のみ">日直のみ</button>
+    <button class="option" data-option="両方">両方</button>
+  </div>
+</div>
+  
   <script>
    document.addEventListener('DOMContentLoaded', function() {
+  // カレンダーの日付要素を取得
+  const dates = document.querySelectorAll('.calendar-grid .date');
+
+  // モーダル要素を取得
+  const modal = document.getElementById('myModal');
+  const closeModal = document.querySelector('.modal .close');
+
+  // 各日付要素にクリックイベントを設定
+  dates.forEach(date => {
+    date.addEventListener('click', function() {
+      const dayOfWeek = new Date(this.dataset.date).getDay();
+      // 土曜日または日曜日の場合にモーダルを表示
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        modal.style.display = 'block';
+      }
+    });
+  });
+
+  // 閉じるボタンのクリックイベントを設定
+  closeModal.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  // モーダルの外側をクリックしたときにモーダルを閉じる
+  window.addEventListener('click', function(event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  });
+});
+     
     let now = new Date(); // 現在の日付と時刻を取得
     let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // 現在の月の最初の日を取得
 
@@ -222,19 +270,6 @@
   <input id="other-name-input" type="text" placeholder="名前を入力" class="mt-2 p-2 border border-gray-300 rounded w-full" style="display:none;">
   <!-- エラーメッセージはそのまま -->
   <p id="name-error" class="text-red-500 text-sm mt-2" style="display: none;">名前を入力してください。</p>
-  </div>
-
-  <!-- 以前提供したモーダルのマークアップをここに貼り付けてください -->
-       <!-- モーダル -->
-    <div id="dateModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>日付の選択肢</h3>
-        <button class="option" data-option="当直のみ">当直のみ</button>
-        <button class="option" data-option="日直のみ">日直のみ</button>
-        <button class="option" data-option="両方">両方</button>
-      </div>
-    </div>
   </div>
 
   <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
