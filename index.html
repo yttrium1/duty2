@@ -68,6 +68,10 @@
       background-color: #fbd38d; /* ホバー時の背景色 */
       cursor: pointer;
     }
+    .duty-btn.selected {
+      background-color: #4CAF50; /* 選択されたボタンの背景色 */
+      color: white; /* 選択されたボタンのテキスト色 */
+    }
     #generate-url {
       display: inline-block;
       background-color: #7B68EE
@@ -319,5 +323,77 @@ document.addEventListener('DOMContentLoaded', function() {
       <button id="generate-url" class="bg-green-600 text-white font-bold py-2 px-4 rounded-full">送信する</button>
     </div>
   </div>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  let selections = new Map(); // 日付と選択肢のマップ
+
+  const dates = document.querySelectorAll('.date'); // 日付要素を取得
+  dates.forEach(date => {
+    const day = new Date(date.getAttribute('data-date')).getDay();
+    if (day === 6 || day === 0) { // 土曜日または日曜日の場合
+      date.addEventListener('click', function() {
+        toggleDutyButtons(date); // 「当」と「日」のボタンを切り替える関数
+      });
+    }
+  });
+
+  function toggleDutyButtons(dateElement) {
+    let dutyButtonsContainer = dateElement.querySelector('.duty-buttons');
+    if (!dutyButtonsContainer) {
+      dutyButtonsContainer = document.createElement('div');
+      dutyButtonsContainer.className = 'duty-buttons';
+      dutyButtonsContainer.innerHTML = `
+        <button class="duty-btn" data-duty="当">当</button>
+        <button class="duty-btn" data-duty="日">日</button>
+      `;
+      dateElement.appendChild(dutyButtonsContainer);
+
+      dutyButtonsContainer.querySelectorAll('.duty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.classList.toggle('selected');
+          updateSelections(dateElement.getAttribute('data-date'), this.getAttribute('data-duty'));
+        });
+      });
+    } else {
+      dutyButtonsContainer.style.display = dutyButtonsContainer.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+
+  function updateSelections(date, duty) {
+    let currentSelection = selections.get(date) || [];
+    if (currentSelection.includes(duty)) {
+      currentSelection = currentSelection.filter(d => d !== duty);
+    } else {
+      currentSelection.push(duty);
+    }
+    selections.set(date, currentSelection);
+  }
+
+  document.getElementById('generate-url').addEventListener('click', function(event) {
+    event.preventDefault();
+    if (!validateSelections()) {
+      alert('すべての必須選択が完了していません。');
+      return;
+    }
+
+    // 選択状態をフォームに追加
+    const selectionsJson = JSON.stringify(Array.from(selections.entries()));
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'selections';
+    hiddenInput.value = selectionsJson;
+    document.getElementById('dutyForm').appendChild(hiddenInput);
+
+    // フォーム送信
+    document.getElementById('dutyForm').submit();
+  });
+
+  function validateSelections() {
+    // ここで選択状態の検証ロジックを実装
+    return true; // すべての検証が通ればtrueを返す
+  }
+});
+</script>
+
 </body>
 </html>
