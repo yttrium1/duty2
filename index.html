@@ -151,6 +151,12 @@
         });
       });
 
+     // 土曜日と日曜日の要素にイベントリスナーを設定
+  const weekendDays = document.querySelectorAll('.calendar-day-sat, .calendar-day-sun');
+  weekendDays.forEach(day => {
+    day.addEventListener('click', showModal);
+  });
+});
       const generateUrlButton = document.getElementById('generate-url');
       generateUrlButton.addEventListener('click', function() {
   const nameSelect = document.getElementById('name-select');
