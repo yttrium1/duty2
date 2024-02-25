@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Calendar Selection</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <!-- ここに以前提供した<style>セクションの内容を貼り付けてください -->
-
- <style>
+</link>
+  <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
 　　　　background-color: #b0c4de;
@@ -70,12 +68,7 @@
       background-color: #fbd38d; /* ホバー時の背景色 */
       cursor: pointer;
     }
-
-   .modal {
-    display: none;
-    }
-  
-   #generate-url {
+    #generate-url {
       display: inline-block;
       background-color: #7B68EE
       color: white;
@@ -85,51 +78,8 @@
       margin-bottom: 8px;
     }
   </style>
-<!-- モーダルのマークアップ -->
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>日付の選択肢</h2>
-    <!-- モーダルの中身 -->
-    <button class="option" data-option="当直のみ">当直のみ</button>
-    <button class="option" data-option="日直のみ">日直のみ</button>
-    <button class="option" data-option="両方">両方</button>
-  </div>
-</div>
-  
   <script>
    document.addEventListener('DOMContentLoaded', function() {
-  // カレンダーの日付要素を取得
-  const dates = document.querySelectorAll('.calendar-grid .date');
-
-  // モーダル要素を取得
-  const modal = document.getElementById('myModal');
-  const closeModal = document.querySelector('.modal .close');
-
-  // 各日付要素にクリックイベントを設定
-  dates.forEach(date => {
-    date.addEventListener('click', function() {
-      const dayOfWeek = new Date(this.dataset.date).getDay();
-      // 土曜日または日曜日の場合にモーダルを表示
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
-        modal.style.display = 'block';
-      }
-    });
-  });
-
-  // 閉じるボタンのクリックイベントを設定
-  closeModal.addEventListener('click', function() {
-    modal.style.display = 'none';
-  });
-
-  // モーダルの外側をクリックしたときにモーダルを閉じる
-  window.addEventListener('click', function(event) {
-    if (event.target == modal) {
-      modal.style.display = 'none';
-    }
-  });
-});
-     
     let now = new Date(); // 現在の日付と時刻を取得
     let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // 現在の月の最初の日を取得
 
@@ -235,8 +185,7 @@
 </head>
 <body class="bg-gray-100">
   <div class="max-w-screen-md mx-auto py-10">
-    <!-- ここに以前提供したページコンテンツを貼り付けてください -->
-   <div class="text-right mb-4">
+    <div class="text-right mb-4">
       <span class="text-lg font-semibold">内科当直希望</span>
     </div>
 
@@ -270,18 +219,16 @@
   <input id="other-name-input" type="text" placeholder="名前を入力" class="mt-2 p-2 border border-gray-300 rounded w-full" style="display:none;">
   <!-- エラーメッセージはそのまま -->
   <p id="name-error" class="text-red-500 text-sm mt-2" style="display: none;">名前を入力してください。</p>
-  </div>
-
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+</div>
+ <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script type="text/javascript">
     (function(){
       emailjs.init("XhqJVhB68ooIcAMCD"); // あなたのEmailJSのユーザーIDに置き換えてください
     })();
   </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // ここに以前提供したJavaScriptコードを貼り付けてください
-      const nameSelect = document.getElementById('name-select');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const nameSelect = document.getElementById('name-select');
   const otherNameInput = document.getElementById('other-name-input');
 
   // プルダウンメニューの選択が変更されたときのイベントリスナーを追加
@@ -373,4 +320,4 @@
     </div>
   </div>
 </body>
-</html>　
+</html>
