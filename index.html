@@ -5,7 +5,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</link>
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
@@ -39,6 +38,9 @@
   　　 display: flex;
       justify-content: center;
       width: 100%; /* コンテナの幅いっぱいに広げる */
+    }
+    .holiday {
+      color: red; /* 祝日を赤色で表示 */
     }
     .step-button {
       display: inline-block;
@@ -181,6 +183,7 @@
 });
 
     });
+    
   </script>
 </head>
 <body class="bg-gray-100">
@@ -227,7 +230,29 @@
     })();
   </script>
 <script>
+  // 祝日データの取得とカレンダーへの反映を行う関数
+async function fetchHolidays(year, month) {
+  const url = `https://holidays-jp.github.io/api/v1/date.json`; // 祝日APIのURLに置き換えてください
+ try {
+    const response = await fetch(url);
+    const holidays = await response.json();
+    return holidays; // 全ての祝日データを返す
+  } catch (error) {
+    console.error("祝日データの取得に失敗しました", error);
+    return [];
+  }
+}
 document.addEventListener('DOMContentLoaded', function() {
+  async function updateCalendar(currentMonth) {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるため調整
+    const holidays = await fetchHolidays(year, month); // 祝日データを取得
+
+    const filteredHolidays = holidays.filter(holiday => {
+    const holidayDate = new Date(holiday.date);
+    return holidayDate.getFullYear() === year && holidayDate.getMonth() + 1 === month;
+  });
+
   const nameSelect = document.getElementById('name-select');
   const otherNameInput = document.getElementById('other-name-input');
 
