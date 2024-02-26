@@ -128,6 +128,14 @@
             grid.innerHTML += `<div class="date">${i}</div>`;
           }
 
+          // ここに祝日データをカレンダーに反映させるコードを追加します。
+          filteredHolidays.forEach(holiday => {
+            const holidayElement = grid.querySelector(`.date[data-date="${holiday.date}"]`);
+            if (holidayElement) {
+              holidayElement.classList.add('holiday');
+            }
+          });
+          
           // Re-add event listeners to new date elements
           grid.querySelectorAll('.date').forEach(date => {
             date.addEventListener('click', function() {
@@ -231,12 +239,13 @@
   </script>
 <script>
   // 祝日データの取得とカレンダーへの反映を行う関数
-async function fetchHolidays(year, month) {
-  const url = `https://holidays-jp.github.io/api/v1/date.json`; // 祝日APIのURLに置き換えてください
- try {
+async function fetchHolidays() {
+  const url = `https://holidays-jp.github.io/api/v1/date.json`;
+  try {
     const response = await fetch(url);
     const holidays = await response.json();
-    return holidays; // 全ての祝日データを返す
+    // APIから返されるオブジェクトの構造に基づいて適切にフィルタリングするコードをここに追加
+    return holidays;
   } catch (error) {
     console.error("祝日データの取得に失敗しました", error);
     return [];
