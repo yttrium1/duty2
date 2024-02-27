@@ -99,22 +99,24 @@
       margin-bottom: 8px;
     }
   </style>
-  <script>
-   document.addEventListener('DOMContentLoaded', async function() {
-     // 祝日情報をカレンダーに反映する関数
-async function updateCalendarWithHolidays(currentMonth, holidays) {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるので+1
-    document.querySelectorAll('.date').forEach(dateEl => {
+  <script>   
+
+
+　   // 1. ここにupdateCalendarWithHolidays関数の定義を挿入
+    async function updateCalendarWithHolidays(currentMonth, holidays) {
+        const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるので+1する
+      document.querySelectorAll('.date').forEach(dateEl => {
         const day = dateEl.textContent.trim();
         const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         if (holidays[fullDate]) {
-            dateEl.classList.add('holiday');
-            dateEl.innerHTML += `<span class="holiday-name">${holidays[fullDate]}</span>`;
+          dateEl.classList.add('holiday');
+          dateEl.innerHTML += `<span class="holiday-name">${holidays[fullDate]}</span>`;
         }
-    });
-}
-document.addEventListener('DOMContentLoaded', async function() {
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
     let now = new Date();
     let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   // 現在の日が1から10の間かどうかをチェック
@@ -125,12 +127,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // それ以外の場合、2ヶ月後のカレンダーを表示
     currentMonth.setMonth(currentMonth.getMonth() + 2);
   }
-
-　   // 1. ここにupdateCalendarWithHolidays関数の定義を挿入
-    async function updateCalendarWithHolidays(currentMonth, holidays) {
-        // 祝日情報をカレンダーに反映する処理
-    }
-
     // 2. カレンダーを初期化または更新
     updateCalendar(currentMonth);
 
