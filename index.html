@@ -101,8 +101,22 @@
   </style>
   <script>
    document.addEventListener('DOMContentLoaded', async function() {
-  let now = new Date(); // 現在の日付と時刻を取得
-  let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // 現在の月の最初の日を取得
+     // 祝日情報をカレンダーに反映する関数
+async function updateCalendarWithHolidays(currentMonth, holidays) {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるので+1
+    document.querySelectorAll('.date').forEach(dateEl => {
+        const day = dateEl.textContent.trim();
+        const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        if (holidays[fullDate]) {
+            dateEl.classList.add('holiday');
+            dateEl.innerHTML += `<span class="holiday-name">${holidays[fullDate]}</span>`;
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', async function() {
+    let now = new Date();
+    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   // 現在の日が1から10の間かどうかをチェック
   if (now.getDate() >= 1 && now.getDate() <= 10) {
     // 1-10日の場合、1ヶ月後のカレンダーを表示
@@ -112,6 +126,28 @@
     currentMonth.setMonth(currentMonth.getMonth() + 2);
   }
 
+　   // 1. ここにupdateCalendarWithHolidays関数の定義を挿入
+    async function updateCalendarWithHolidays(currentMonth, holidays) {
+        // 祝日情報をカレンダーに反映する処理
+    }
+
+    // 2. カレンダーを初期化または更新
+    updateCalendar(currentMonth);
+
+    // 3. 祝日情報を取得してカレンダーに反映するコードをここに挿入
+    const year = currentMonth.getFullYear();
+    const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
+    try {
+        const response = await fetch(holidaysUrl);
+        const holidays = await response.json();
+        updateCalendarWithHolidays(currentMonth, holidays);
+    } catch (error) {
+        console.error('祝日情報の取得に失敗しました', error);
+    }
+
+    // 次の月、前の月へのナビゲーションなど、その他の処理
+});
+  
       // 祝日情報を取得してカレンダーに反映する処理をここに移動
   const year = currentMonth.getFullYear(); // currentMonthから年を取得
   const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
@@ -187,20 +223,7 @@
           updateCalendar(currentMonth);
         });
       });
-     // 祝日情報をカレンダーに反映する関数の定義
-  async function updateCalendarWithHolidays(currentMonth, holidays) {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるので+1する
-    document.querySelectorAll('.date').forEach(dateEl => {
-      const day = dateEl.textContent.trim();
-      const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      if (holidays[fullDate]) {
-        dateEl.classList.add('holiday');
-        dateEl.innerHTML += `<span class="holiday-name">${holidays[fullDate]}</span>`;
-      }
-    });
-  }
-
+   
   // 祝日情報を取得してカレンダーに反映する処理をここに移動
   const year = currentMonth.getFullYear(); // currentMonthから年を取得
   const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
@@ -250,6 +273,8 @@
     <div class="text-right mb-4">
       <span class="text-lg font-semibold">内科当直希望</span>
     </div>
+
+    
 
   <div class="mb-8">
   <span class="step-button">STEP 1</span>
