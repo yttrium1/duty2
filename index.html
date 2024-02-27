@@ -1,11 +1,11 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Calendar Selection</title>
+  <title>内科 日当直</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</link>
+  
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
@@ -134,9 +134,26 @@
           });
         });
       }
+     // ここに新しい updateDayDutyCalendar 関数を挿入
+  function updateDayDutyCalendar(month, isPreferred) {
+    const titleClass = isPreferred ? '.month-title-day-duty' : '.month-title-not-day-duty';
+    const gridClass = isPreferred ? '.calendar-grid-day-duty' : '.calendar-grid-not-day-duty';
+    
+    const monthTitle = document.querySelectorAll(titleClass);
+    const calendarGrids = document.querySelectorAll(gridClass);
+
+    monthTitle.forEach(title => {
+      title.textContent = `${month.getFullYear()}年 ${month.getMonth() + 1}月`;
+    });
+
+    calendarGrids.forEach(grid => {
+      grid.innerHTML = ''; // Clear the calendar grid
+      // 以下、既存のupdateCalendar関数からのコードをコピーし、必要に応じてクラス名を調整
+    });
+  }
 
       updateCalendar(currentMonth);
-
+// 前後の月への移動
       document.querySelectorAll('.prev-month').forEach(button => {
         button.addEventListener('click', function() {
           currentMonth.setMonth(currentMonth.getMonth() - 1);
