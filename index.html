@@ -12,7 +12,9 @@
       font-family: 'Noto Sans JP', sans-serif;
 　　　　background-color: #b0c4de;
       }
-    
+    </body>
+
+
     body {
   margin: 0;
   padding: 20px; /* 上下左右に20pxのパディングを追加 */
@@ -54,17 +56,6 @@
       justify-content: center;
       width: 100%; /* コンテナの幅いっぱいに広げる */
     }
-
-    .holiday {
-      background-color: #ffcccc; /* 祝日の背景色 */
-    }
-    
-    .holiday-name {
-      display: block;
-      color: red; /* 祝日名の文字色 */
-      font-weight: bold;
-    }
-    
     .step-button {
       display: inline-block;
       background-color: #68d391;
@@ -74,51 +65,119 @@
       border-radius: 9999px;
       margin-bottom: 8px;
     }
-    .date {
+  .date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1 0 14%;
+  transition: background-color 0.3s ease;
+  border: 1px solid #bbb; /* 境界線を追加 */
+}
+ 
+  .note {
+  font-size: 0.8em; /* フォントサイズを小さく */
+  color: #555; /* テキストの色を灰色に */
+  margin-top: 4px; /* 上のマージンを調整 */
+}
+
+    .date-cell {
       display: flex;
+      justify-content: space-around;
+      flex: 1 0 4%; /* 各グリッドセルがコンテナの幅の14%を取るように設定 */
+      border: 1px solid #bbb; /* 境界線を追加 */
+          }
+    .duty, .day {
+      flex: 1 0 7%; /* これにより、これらの要素は日付の半分の幅を取る */
+      text-align: center;
       justify-content: center;
       align-items: center;
-      text-align: center;
+      margin: 2px; /* 余白を適切に設定 */
+  /* その他必要なスタイルがあれば追加 */
     }
+    
     .calendar-grid {
+      display: flex; /* Flexコンテナとして指定 */
+      flex-wrap: wrap; /* 要素を折り返すように指定 */
+      justify-content: space-between; /* 要素の間にスペースを均等に配置 */
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       border: 1px solid #ccc;
     }
-
     .date {
       transition: background-color 0.3s ease; /* ホバーエフェクトの滑らかな変化 */
     }
     
     #generate-url {
-      display: inline-block;
-      background-color: #7B68EE
-      color: white;
-      font-weight: bold;
-      padding: 8px 16px;
-      border-radius: 9999px;
-      margin-bottom: 8px;
-    }
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 7px;
+  border: 1px solid rgb(61, 106, 255); /* 枠の色 */
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 2px;
+  background: rgb(61, 106, 255); /* デフォルトの背景色を青に */
+  color: #fff; /* デフォルトの文字色は白 */
+  overflow: hidden;
+  box-shadow: 0 0 30px 5px rgba(0, 142, 236, 0.815); /* デフォルト状態でのシャドウ */
+  transition: all 0.2s ease-in-out;
+}
+
+#generate-url:hover {
+  background: transparent; /* ホバー時の背景を透明に */
+  color: rgb(61, 106, 255); /* ホバー時の文字色を青に（背景が透明なので見えるように） */
+  box-shadow: 0 0 0 0 transparent; /* ホバー時のシャドウを削除 */
+}
+
+#generate-url:hover::before {
+  animation: none; /* ホバー時のアニメーションを無効化（必要に応じて） */
+}
+#generate-url::before {
+ content: '';
+  display: block;
+  width: 0px;
+  height: 86%;
+  position: absolute;
+  top: 7%;
+  left: 0%;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 50px 30px #fff;
+  -webkit-transform: skewX(-20deg);
+  -moz-transform: skewX(-20deg);
+  -ms-transform: skewX(-20deg);
+  -o-transform: skewX(-20deg);
+  transform: skewX(-20deg);}
+
+@keyframes  {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+#generate-url:active {
+box-shadow: 0 0 0 0 transparent;
+  -webkit-transition: box-shadow 0.2s ease-in;
+  -moz-transition: box-shadow 0.2s ease-in;
+  transition: box-shadow 0.2s ease-in;
+}
+    
   </style>
-  <script>   
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    let now = new Date(); // 現在の日付と時刻を取得
+    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // 現在の月の最初の日を取得
 
-
-　   // 1. ここにupdateCalendarWithHolidays関数の定義を挿入
-    async function updateCalendarWithHolidays(currentMonth, holidays) {
-        const year = currentMonth.getFullYear();
-      const month = currentMonth.getMonth() + 1; // JavaScriptの月は0から始まるので+1する
-      document.querySelectorAll('.date').forEach(dateEl => {
-        const day = dateEl.textContent.trim();
-        const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        if (holidays[fullDate]) {
-          dateEl.classList.add('holiday');
-          dateEl.innerHTML += `<span class="holiday-name">${holidays[fullDate]}</span>`;
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', async function() {
-    let now = new Date();
-    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   // 現在の日が1から10の間かどうかをチェック
   if (now.getDate() >= 1 && now.getDate() <= 10) {
     // 1-10日の場合、1ヶ月後のカレンダーを表示
@@ -127,39 +186,6 @@
     // それ以外の場合、2ヶ月後のカレンダーを表示
     currentMonth.setMonth(currentMonth.getMonth() + 2);
   }
-    // 2. カレンダーを初期化または更新
-    updateCalendar(currentMonth);
-
-    // 3. 祝日情報を取得してカレンダーに反映するコードをここに挿入
-    const year = currentMonth.getFullYear();
-    const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
-    try {
-        const response = await fetch(holidaysUrl);
-        const holidays = await response.json();
-        updateCalendarWithHolidays(currentMonth, holidays);
-    } catch (error) {
-        console.error('祝日情報の取得に失敗しました', error);
-    }
-
-    // 次の月、前の月へのナビゲーションなど、その他の処理
-});
-  
-      // 祝日情報を取得してカレンダーに反映する処理をここに移動
-  const year = currentMonth.getFullYear(); // currentMonthから年を取得
-  const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
-  try {
-    const response = await fetch(holidaysUrl);
-    const holidays = await response.json();
-    updateCalendarWithHolidays(currentMonth, holidays); // currentMonthとholidaysを引数に渡す
-  } catch (error) {
-    console.error('祝日情報の取得に失敗しました', error);
-  }
-
-  function updateCalendarWithHolidays(currentMonth, holidays) {
-    // ここでカレンダーの日付要素を取得し、祝日があれば表示を更新
-    // 注意: currentMonthを使用して正しい年月の日付を生成する必要があります
-  }
-
       const monthTitle = document.querySelectorAll('.month-title');
       const calendarGrids = document.querySelectorAll('.calendar-grid');
 
@@ -190,13 +216,68 @@
             grid.innerHTML += '<div></div>';
           }
 
-          // Add day cells to the calendar
+           // 2024年の日本の祝日リスト
+            const holidays2024 = [
+              "2024-01-01", // 元日
+              "2024-01-08", // 成人の日
+              "2024-02-11", // 建国記念の日
+              "2024-03-20", // 春分の日
+              "2024-04-29", // 昭和の日
+              "2024-05-03", // 憲法記念日
+              "2024-05-04", // みどりの日
+              "2024-05-05", // こどもの日
+　　　　　　　　　"2024-05-06", // 振替休日
+              "2024-07-15", // 海の日
+              "2024-08-11", // 山の日
+              "2024-09-16", // 敬老の日
+              "2024-09-23", // 秋分の日
+              "2024-10-14", // 体育の日
+              "2024-11-03", // 文化の日
+              "2024-11-23", // 勤労感謝の日
+              "2024-12-23", // 天皇誕生日
+            ];
+          // Add day cells to the calendar, including special markers for weekends
+          const isHoliday = (date) => {
+            const month = date.getMonth() + 1; // JSでは月が0から始まるため調整
+            const day = date.getDate();
+            const dateString = `${date.getFullYear()}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            return holidays2024.includes(dateString);
+          };
+                    
           for (let i = 1; i <= daysInMonth; i++) {
-            grid.innerHTML += `<div class="date">${i}</div>`;
-          }
+            let date = new Date(month.getFullYear(), month.getMonth(), i);
+            let dayOfWeek = date.getDay();
+            let isSpecialDate = isHoliday(date);
+            let dateCellContent = `<div class="date">${i}</div>`; // 通常の日付セルの内容
 
-          // Re-add event listeners to new date elements
-          grid.querySelectorAll('.date').forEach(date => {
+            // 6月8日の場合、注釈を追加
+            if (month.getMonth() === 5 && i === 8) { // JSでは月が0から始まるので、6月は5
+            dateCellContent += `<div class="note">8:00から</div>`; // 注釈を追加
+            }
+
+            if (dayOfWeek === 0 || dayOfWeek === 6 || isSpecialDate) {
+              grid.innerHTML += `
+            <div class="date-cell special">
+            ${dateCellContent}
+            </div>`;
+            } else {
+              grid.innerHTML += `<div class="date-cell">${dateCellContent}</div>`;
+            }
+          }
+  
+        if (dayOfWeek === 0 || dayOfWeek === 6 || isSpecialDate) {
+          grid.innerHTML += `
+            <div class="date-cell">
+              <div class="date duty">${i}日</div>
+              <div class="date day">${i}当</div>
+            </div>`;
+        } else {
+          grid.innerHTML += `<div class="date">${i}</div>`;
+        }
+      }
+
+          // Re-add event listeners to all date elements including "当" and "日"
+          grid.querySelectorAll('.date, .duty, .day').forEach(date => {
             date.addEventListener('click', function() {
               this.classList.toggle('bg-yellow-300');
             });
@@ -219,18 +300,7 @@
           updateCalendar(currentMonth);
         });
       });
-   
-  // 祝日情報を取得してカレンダーに反映する処理をここに移動
-  const year = currentMonth.getFullYear(); // currentMonthから年を取得
-  const holidaysUrl = `https://holidays-jp.github.io/api/v1/${year}/date.json`;
-  try {
-    const response = await fetch(holidaysUrl);
-    const holidays = await response.json();
-    updateCalendarWithHolidays(currentMonth, holidays); // currentMonthとholidaysを引数に渡す
-  } catch (error) {
-    console.error('祝日情報の取得に失敗しました', error);
-  }
-});
+
       const generateUrlButton = document.getElementById('generate-url');
       generateUrlButton.addEventListener('click', function() {
   const nameSelect = document.getElementById('name-select');
@@ -248,12 +318,12 @@
   }
 
   const comment = document.querySelector('#comment-input').value;
-  const preferredDates = Array.from(document.querySelectorAll('.preferred .date.bg-yellow-300')).map(el => el.textContent.trim());
-  const notPreferredDates = Array.from(document.querySelectorAll('.not-preferred .date.bg-yellow-300')).map(el => el.textContent.trim());
-  
+    const preferredDates = Array.from(document.querySelectorAll('.preferred .date.bg-yellow-300, .preferred .duty.bg-yellow-300, .preferred .day.bg-yellow-300')).map(el => el.textContent.trim());
+    const notPreferredDates = Array.from(document.querySelectorAll('.not-preferred .date.bg-yellow-300, .not-preferred .duty.bg-yellow-300, .not-preferred .day.bg-yellow-300')).map(el => el.textContent.trim());
+
   const summary = `回答者の名前: ${name}\n希望日: ${preferredDates.join(', ')}\n希望しない日: ${notPreferredDates.join(', ')}\nコメント: ${comment}`;
   const email = 'rosai041321@gmail.com';
-  const subject = encodeURIComponent('内科当直希望');
+  const subject = encodeURIComponent('内科日当直希望');
   const body = encodeURIComponent(summary);
   // const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
   
@@ -270,31 +340,33 @@
       <span class="text-lg font-semibold">内科当直希望</span>
     </div>
 
-    
-
   <div class="mb-8">
   <span class="step-button">STEP 1</span>
   <select id="name-select" class="mt-2 p-2 border border-gray-300 rounded w-full">
     <option value="">回答者の名前を選択してください(敬称略）</option>
     <option value="西中川">西中川</option>
     <option value="大場">大場</option>
-    <option value="乾山">乾山</option>
     <option value="荻野">荻野</option>
-    <option value="高橋（伸）">高橋（伸）</option>
-    <option value="渡辺（浩）">渡辺（浩）</option>
     <option value="折原">折原</option>
     <option value="池上">池上</option>
     <option value="中島">中島</option>
+    <option value="石井">石井</option>
     <option value="河野">河野</option>
     <option value="松村">松村</option>
+    <option value="鈴木">鈴木</option>
     <option value="伊藤">伊藤</option>
+    <option value="堀">堀</option>
     <option value="堂脇">堂脇</option>
+    <option value="宮野">宮野</option>
     <option value="古賀">古賀</option>
     <option value="吉玉">吉玉</option>
     <option value="浅原">浅原</option>
     <option value="高亀">高亀</option>
+    <option value="小泉">小泉</option>
     <option value="中村">中村</option>
-    <option value="久次米">久次米</option>
+    <option value="有上">有上</option>
+    <option value="久次米（謝金）">久次米（謝金）</option>
+    
     <!-- 他の選択肢を追加 -->
     <option value="その他">その他</option>
   </select>
@@ -361,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="mb-8">
       <span class="step-button">STEP 2</span>
-      <p class="text-gray-700 text-sm mt-2">希望日を選択してください</p>
+      <p class="text-gray-700 text-sm mt-2">希望日を選択してください．※土曜日直について　金曜当直が外勤医師の場合，8:00開始となります．</p>
       <div class="mt-2 p-4 border border-gray-300 rounded preferred bg-white">
         <div class="flex justify-between items-center mb-4">
           <button class="prev-month"><i class="fas fa-chevron-left"></i></button>
@@ -376,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="mb-8">
       <span class="step-button">STEP 3</span>
-      <p class="text-gray-700 text-sm mt-2">希望しない日を選択してください(翌日外勤・外来でできない場合も含む）.</p>
+      <p class="text-gray-700 text-sm mt-2">希望しない日を選択してください(翌日外勤・外来でできない場合も含む）※土曜日直について　金曜当直が外勤医師の場合，8:00開始となります.</p>
       <div class="mt-2 p-4 border border-gray-300 rounded not-preferred bg-white">
         <div class="flex justify-between items-center mb-4">
           <button class="prev-month"><i class="fas fa-chevron-left"></i></button>
@@ -391,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="mb-8">
       <span class="step-button">STEP 4</span>
-      <p class="text-gray-700 text-sm mt-2">コメントを追加してください（任意）休日で，日直のみ　または　当直のみを希望する日はこちらにコメントをお願いします．例）「17は当直のみ×です」など．現在ボタンを変更できないか開発中です．お手数をおかけしますがよろしくお願いします</p>
+      <p class="text-gray-700 text-sm mt-2">コメントを追加してください（任意）</p>
     <textarea id="comment-input" class="mt-2 p-2 border border-gray-300 rounded w-full" placeholder="コメント"></textarea>
     </div>
     <div class="mb-8">
@@ -399,8 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <input type="email" id="email-input" name="email" placeholder="your.email@example.com" class="mt-1 p-2 border border-gray-300 rounded w-full">
     </div>
     <div>
-      <button id="generate-url" class="bg-green-600 text-white font-bold py-2 px-4 rounded-full">送信する</button>
-            <p class="text-gray-700 text-sm mt-2">（ボタンを押した後，完了まで数秒かかります．）</p>
+     <button id="generate-url">送信する</button>
     </div>
   </div>
 </body>
