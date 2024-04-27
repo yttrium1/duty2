@@ -174,18 +174,71 @@ box-shadow: 0 0 0 0 transparent;
     
   </style>
   <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    let now = new Date(); // 現在の日付と時刻を取得
-    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1); // 現在の月の最初の日を取得
+ document.addEventListener('DOMContentLoaded', function() {
+    let now = new Date();
+    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  // 現在の日が1から10の間かどうかをチェック
-  if (now.getDate() >= 1 && now.getDate() <= 10) {
-    // 1-10日の場合、1ヶ月後のカレンダーを表示
-    currentMonth.setMonth(currentMonth.getMonth() + 1);
-  } else {
-    // それ以外の場合、2ヶ月後のカレンダーを表示
-    currentMonth.setMonth(currentMonth.getMonth() + 2);
-  }
+    if (now.getDate() >= 1 && now.getDate() <= 10) {
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
+    } else {
+        currentMonth.setMonth(currentMonth.getMonth() + 2);
+    }
+
+    function updateCalendar(month) {
+        const monthTitle = document.querySelectorAll('.month-title');
+        const calendarGrids = document.querySelectorAll('.calendar-grid');
+
+        monthTitle.forEach(title => {
+            title.textContent = `${month.getFullYear()}年 ${month.getMonth() + 1}月`;
+        });
+
+        calendarGrids.forEach(grid => {
+            grid.innerHTML = ''; // Clear the calendar grid
+
+            const firstDay = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
+            const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+
+            const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+            daysOfWeek.forEach((day, index) => {
+                let dayClass = 'calendar-day';
+                if (index === 0) dayClass += ' calendar-day-sun';
+                if (index === 6) dayClass += ' calendar-day-sat';
+                grid.innerHTML += `<div class="${dayClass}">${day}</div>`;
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += '<div></div>';
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                let date = new Date(month.getFullYear(), month.getMonth(), i);
+                let dayOfWeek = date.getDay();
+                let dateCellContent = `<div class="date">${i}</div>`;
+                grid.innerHTML += `<div class="date-cell">${dateCellContent}</div>`;
+            }
+        });
+    }
+
+    updateCalendar(currentMonth);
+
+    const prevMonthButtons = document.querySelectorAll('.prev-month');
+    const nextMonthButtons = document.querySelectorAll('.next-month');
+
+    prevMonthButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            updateCalendar(currentMonth);
+        });
+    });
+
+    nextMonthButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            updateCalendar(currentMonth);
+        });
+    });
+});
+
       const monthTitle = document.querySelectorAll('.month-title');
       const calendarGrids = document.querySelectorAll('.calendar-grid');
 
