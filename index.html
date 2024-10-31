@@ -1,531 +1,199 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日当直希望</title>
+  <title>内科当直希望登録</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</link>
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
-　　　　background-color: #b0c4de;
-      }
-    </body>
-
-
-    body {
-  margin: 0;
-  padding: 20px; /* 上下左右に20pxのパディングを追加 */
-  font-family: 'Noto Sans JP', sans-serif;
-  background-color: #b0c4de;
-}
-
-.container {
-  max-width: 1200px; /* コンテンツの最大幅を1200pxに設定 */
-  margin: 0 auto; /* 左右のマージンをautoに設定して中央寄せ */
-  padding: 20px; /* コンテナの内側に20pxのパディングを追加 */
-  background-color: white; /* 背景色を白に設定 */
-  box-shadow: 0 0 10px rgba(0,0,0,0.1); /* シャドウを追加して立体感を出す */
-}
-    .date:hover {
-      cursor: pointer;
-      background-color: #fbd38d;
+      background-color: #f3f4f6;
     }
-    .calendar-day {
-      font-weight: bold;
-      text-align: center;
-  　　 display: flex;
-      justify-content: center;
-      width: 100%; /* コンテナの幅いっぱいに広げる */
-    }
-    .calendar-day-sun {
-      color: red;
-      font-weight: bold;
-      text-align: center;
-  　　 display: flex;
-      justify-content: center;
-      width: 100%; /* コンテナの幅いっぱいに広げる */
-    }
-    .calendar-day-sat {
-      color: blue;
-      font-weight: bold;
-      text-align: center;
-  　　 display: flex;
-      justify-content: center;
-      width: 100%; /* コンテナの幅いっぱいに広げる */
-    }
-    .step-button {
-      display: inline-block;
-      background-color: #68d391;
-      color: white;
-      font-weight: bold;
-      padding: 8px 16px;
-      border-radius: 9999px;
-      margin-bottom: 8px;
-    }
-  .date {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  flex: 1 0 14%;
-  transition: background-color 0.3s ease;
-  border: 1px solid #bbb; /* 境界線を追加 */
-}
-  .date-cell {
-  display: flex;
-  justify-content: space-around;
-  flex: 1 0 4%; /* 各グリッドセルがコンテナの幅の14%を取るように設定 */
-  border: 1px solid #bbb; /* 境界線を追加 */
-      }
-  
-  .note {
-  font-size: 0.8em; /* フォントサイズを小さく */
-  color: #555; /* テキストの色を灰色に */
-  margin-top: 4px; /* 上のマージンを調整 */
-  }
-    
-  .duty, .day {
-  flex: 1 0 7%; /* これにより、これらの要素は日付の半分の幅を取る */
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  margin: 2px; /* 余白を適切に設定 */
-  /* その他必要なスタイルがあれば追加 */
-    }
-    
     .calendar-grid {
-      display: flex; /* Flexコンテナとして指定 */
-      flex-wrap: wrap; /* 要素を折り返すように指定 */
-      justify-content: space-between; /* 要素の間にスペースを均等に配置 */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      border: 1px solid #ccc;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background-color: #e5e7eb;
+      border: 1px solid #d1d5db;
+      margin-top: 1rem;
     }
-    .date {
-      transition: background-color 0.3s ease; /* ホバーエフェクトの滑らかな変化 */
+    .calendar-header {
+      background-color: #f9fafb;
+      padding: 0.5rem;
+      text-align: center;
+      font-weight: bold;
     }
-    
-    #generate-url {
-  position: relative;
-  padding: 10px 20px;
-  border-radius: 7px;
-  border: 1px solid rgb(61, 106, 255); /* 枠の色 */
-  font-size: 14px;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 2px;
-  background: rgb(61, 106, 255); /* デフォルトの背景色を青に */
-  color: #fff; /* デフォルトの文字色は白 */
-  overflow: hidden;
-  box-shadow: 0 0 30px 5px rgba(0, 142, 236, 0.815); /* デフォルト状態でのシャドウ */
-  transition: all 0.2s ease-in-out;
-}
-
-#generate-url:hover {
-  background: transparent; /* ホバー時の背景を透明に */
-  color: rgb(61, 106, 255); /* ホバー時の文字色を青に（背景が透明なので見えるように） */
-  box-shadow: 0 0 0 0 transparent; /* ホバー時のシャドウを削除 */
-}
-
-#generate-url:hover::before {
-  animation: none; /* ホバー時のアニメーションを無効化（必要に応じて） */
-}
-#generate-url::before {
- content: '';
-  display: block;
-  width: 0px;
-  height: 86%;
-  position: absolute;
-  top: 7%;
-  left: 0%;
-  opacity: 0;
-  background: #fff;
-  box-shadow: 0 0 50px 30px #fff;
-  -webkit-transform: skewX(-20deg);
-  -moz-transform: skewX(-20deg);
-  -ms-transform: skewX(-20deg);
-  -o-transform: skewX(-20deg);
-  transform: skewX(-20deg);}
-
-@keyframes  {
-  from {
-    opacity: 0;
-    left: 0%;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-    left: 100%;
-  }
-}
-
-#generate-url:active {
-box-shadow: 0 0 0 0 transparent;
-  -webkit-transition: box-shadow 0.2s ease-in;
-  -moz-transition: box-shadow 0.2s ease-in;
-  transition: box-shadow 0.2s ease-in;
-}
-    
+    .calendar-cell {
+      background-color: white;
+      padding: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .calendar-cell:hover:not(.disabled):not(.new-year) {
+      background-color: #fef3c7;
+    }
+    .calendar-cell.selected {
+      background-color: #fde68a;
+    }
+    .sunday {
+      color: #dc2626;
+    }
+    .saturday {
+      color: #2563eb;
+    }
+    .disabled {
+      background-color: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+    .new-year {
+      background-color: #fee2e2;
+      color: #dc2626;
+      cursor: not-allowed;
+    }
+    .month-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      text-align: center;
+    }
   </style>
-  <script>
- document.addEventListener('DOMContentLoaded', function() {
-    let now = new Date();
-    let currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    if (now.getDate() >= 1 && now.getDate() <= 10) {
-        currentMonth.setMonth(currentMonth.getMonth() + 1);
-    } else {
-        currentMonth.setMonth(currentMonth.getMonth() + 2);
-    }
-
-    function updateCalendar(month) {
-        const monthTitle = document.querySelectorAll('.month-title');
-        const calendarGrids = document.querySelectorAll('.calendar-grid');
-
-        monthTitle.forEach(title => {
-            title.textContent = `${month.getFullYear()}年 ${month.getMonth() + 1}月`;
-        });
-
-        calendarGrids.forEach(grid => {
-            grid.innerHTML = ''; // Clear the calendar grid
-
-            const firstDay = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
-            const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-
-            const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
-            daysOfWeek.forEach((day, index) => {
-                let dayClass = 'calendar-day';
-                if (index === 0) dayClass += ' calendar-day-sun';
-                if (index === 6) dayClass += ' calendar-day-sat';
-                grid.innerHTML += `<div class="${dayClass}">${day}</div>`;
-            });
-
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += '<div></div>';
-            }
-
-            for (let i = 1; i <= daysInMonth; i++) {
-                let date = new Date(month.getFullYear(), month.getMonth(), i);
-                let dayOfWeek = date.getDay();
-                let dateCellContent = `<div class="date">${i}</div>`;
-                grid.innerHTML += `<div class="date-cell">${dateCellContent}</div>`;
-            }
-        });
-    }
-
-    updateCalendar(currentMonth);
-
-    const prevMonthButtons = document.querySelectorAll('.prev-month');
-    const nextMonthButtons = document.querySelectorAll('.next-month');
-
-    prevMonthButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            currentMonth.setMonth(currentMonth.getMonth() - 1);
-            updateCalendar(currentMonth);
-        });
-    });
-
-    nextMonthButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            currentMonth.setMonth(currentMonth.getMonth() + 1);
-            updateCalendar(currentMonth);
-        });
-    });
-});
-
-      const monthTitle = document.querySelectorAll('.month-title');
-      const calendarGrids = document.querySelectorAll('.calendar-grid');
-
-      function updateCalendar(month) {
-        monthTitle.forEach(title => {
-          title.textContent = `${month.getFullYear()}年 ${month.getMonth() + 1}月`;
-        });
-
-        calendarGrids.forEach(grid => {
-          grid.innerHTML = ''; // Clear the calendar grid
-
-          // Get the first day of the month
-          const firstDay = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
-          // Get the number of days in the month
-          const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-
-          // Add day labels
-          const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
-          daysOfWeek.forEach((day, index) => {
-            let dayClass = 'calendar-day';
-            if (index === 0) dayClass += ' calendar-day-sun';
-            if (index === 6) dayClass += ' calendar-day-sat';
-            grid.innerHTML += `<div class="${dayClass}">${day}</div>`;
-          });
-
-          // Add empty cells before the first day of the month
-          for (let i = 0; i < firstDay; i++) {
-            grid.innerHTML += '<div></div>';
-          }
-
-           // 2024年の日本の祝日リスト
-            const holidays2024 = [
-              "2024-01-01", // 元日
-              "2024-01-08", // 成人の日
-              "2024-02-11", // 建国記念の日
-              "2024-03-20", // 春分の日
-              "2024-04-29", // 昭和の日
-              "2024-05-03", // 憲法記念日
-              "2024-05-04", // みどりの日
-              "2024-05-05", // こどもの日
-　　　　　　　　　"2024-05-06", // 振替休日
-              "2024-07-15", // 海の日
-              "2024-08-11", // 山の日
-              "2024-09-16", // 敬老の日
-              "2024-09-23", // 秋分の日
-              "2024-10-14", // 体育の日
-              "2024-11-03", // 文化の日
-              "2024-11-23", // 勤労感謝の日
-              "2024-12-23", // 天皇誕生日
-            ];
-          // Add day cells to the calendar, including special markers for weekends
-          const isHoliday = (date) => {
-            const month = date.getMonth() + 1; // JSでは月が0から始まるため調整
-            const day = date.getDate();
-            const dateString = `${date.getFullYear()}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-            return holidays2024.includes(dateString);
-          };
-                    
-          for (let i = 1; i <= daysInMonth; i++) {
-            let date = new Date(month.getFullYear(), month.getMonth(), i);
-            let dayOfWeek = date.getDay();
-            let isSpecialDate = isHoliday(date);
-            let dateCellContent = `<div class="date">${i}</div>`; // 通常の日付セルの内容
-
-            // 6月8日の場合、注釈を追加
-            if (month.getMonth() === 5 && i === 8) { // JSでは月が0から始まるので、6月は5
-            dateCellContent += `<div class="note">8:00から</div>`; // 注釈を追加
-            }
-
-            if (dayOfWeek === 0 || dayOfWeek === 6 || isSpecialDate) {
-              grid.innerHTML += `
-            <div class="date-cell special">
-            ${dateCellContent}
-            </div>`;
-            } else {
-              grid.innerHTML += `<div class="date-cell">${dateCellContent}</div>`;
-            }
-          }
-  
-        if (dayOfWeek === 0 || dayOfWeek === 6 || isSpecialDate) {
-          grid.innerHTML += `
-            <div class="date-cell">
-              <div class="date duty">${i}日</div>
-              <div class="date day">${i}当</div>
-            </div>`;
-        } else {
-          grid.innerHTML += `<div class="date">${i}</div>`;
-        }
-      }
-
-          // Re-add event listeners to all date elements including "当" and "日"
-          grid.querySelectorAll('.date, .duty, .day').forEach(date => {
-            date.addEventListener('click', function() {
-              this.classList.toggle('bg-yellow-300');
-            });
-          });
-        });
-      }
-
-      updateCalendar(currentMonth);
-
-      document.querySelectorAll('.prev-month').forEach(button => {
-        button.addEventListener('click', function() {
-          currentMonth.setMonth(currentMonth.getMonth() - 1);
-          updateCalendar(currentMonth);
-        });
-      });
-
-      document.querySelectorAll('.next-month').forEach(button => {
-        button.addEventListener('click', function() {
-          currentMonth.setMonth(currentMonth.getMonth() + 1);
-          updateCalendar(currentMonth);
-        });
-      });
-
-      const generateUrlButton = document.getElementById('generate-url');
-      generateUrlButton.addEventListener('click', function() {
-  const nameSelect = document.getElementById('name-select');
-  let name = nameSelect.value;
-  if (name === 'その他') {
-    const otherNameInput = document.getElementById('other-name-input');
-    name = otherNameInput.value;
-    if (!name.trim()) {
-      alert('名前を入力してください。');
-      return;
-    }
-  } else if (!name) {
-    alert('名前を選択してください。');
-    return;
-  }
-
-  const comment = document.querySelector('#comment-input').value;
-    const preferredDates = Array.from(document.querySelectorAll('.preferred .date.bg-yellow-300, .preferred .duty.bg-yellow-300, .preferred .day.bg-yellow-300')).map(el => el.textContent.trim());
-    const notPreferredDates = Array.from(document.querySelectorAll('.not-preferred .date.bg-yellow-300, .not-preferred .duty.bg-yellow-300, .not-preferred .day.bg-yellow-300')).map(el => el.textContent.trim());
-
-  const summary = `回答者の名前: ${name}\n希望日: ${preferredDates.join(', ')}\n希望しない日: ${notPreferredDates.join(', ')}\nコメント: ${comment}`;
-  const email = 'rosai041321@gmail.com';
-  const subject = encodeURIComponent('内科日当直希望');
-  const body = encodeURIComponent(summary);
-  // const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
-  
-  // window.location.href = mailtoLink;
-});
-
-    });
-  </script>
 </head>
-<body class="bg-gray-100">
-  <div class="container"> <!-- コンテナを開始 -->
-  <div class="max-w-screen-md mx-auto py-10">
-    <div class="text-right mb-4">
-      <span class="text-lg font-semibold">内科当直希望</span>
-    </div>
+<body>
+  <div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-2xl font-bold text-center mb-8">内科当直希望登録</h1>
 
-  <div class="mb-8">
-  <span class="step-button">STEP 1</span>
-  <select id="name-select" class="mt-2 p-2 border border-gray-300 rounded w-full">
-    <option value="">回答者の名前を選択してください(敬称略）</option>
-    <option value="西中川">西中川</option>
-    <option value="大場">大場</option>
-    <option value="荻野">荻野</option>
-    <option value="折原">折原</option>
-    <option value="池上">池上</option>
-    <option value="中島">中島</option>
-    <option value="石井">石井</option>
-    <option value="河野">河野</option>
-    <option value="松村">松村</option>
-    <option value="鈴木">鈴木</option>
-    <option value="伊藤">伊藤</option>
-    <option value="堀">堀</option>
-    <option value="堂脇">堂脇</option>
-    <option value="宮野">宮野</option>
-    <option value="古賀">古賀</option>
-    <option value="吉玉">吉玉</option>
-    <option value="浅原">浅原</option>
-    <option value="高亀">高亀</option>
-    <option value="小泉">小泉</option>
-    <option value="中村">中村</option>
-    <option value="有上">有上</option>
-    <option value="久次米（謝金）">久次米（謝金）</option>
-    
-    <!-- 他の選択肢を追加 -->
-    <option value="その他">その他</option>
-  </select>
-  <!-- "その他"が選択された場合に表示する新しいテキスト入力フィールド -->
-  <input id="other-name-input" type="text" placeholder="名前を入力" class="mt-2 p-2 border border-gray-300 rounded w-full" style="display:none;">
-  <!-- エラーメッセージはそのまま -->
-  <p id="name-error" class="text-red-500 text-sm mt-2" style="display: none;">名前を入力してください。</p>
-</div>
- <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript">
-    (function(){
-      emailjs.init("XhqJVhB68ooIcAMCD"); // あなたのEmailJSのユーザーIDに置き換えてください
-    })();
-  </script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const nameSelect = document.getElementById('name-select');
-  const otherNameInput = document.getElementById('other-name-input');
-
-  // プルダウンメニューの選択が変更されたときのイベントリスナーを追加
-  nameSelect.addEventListener('change', function() {
-    if (this.value === 'その他') {
-      // "その他"が選択されたら、テキストフィールドを表示
-      otherNameInput.style.display = '';
-    } else {
-      // "その他"以外が選択されたら、テキストフィールドを非表示
-      otherNameInput.style.display = 'none';
-    }
-  });
-   // EmailJSを使ってフォームを送信する処理
-    document.getElementById('generate-url').addEventListener('click', function(event) {
-        event.preventDefault(); // フォームのデフォルト送信を防ぐ
-
-        // フォームのデータを取得
-        var nameSelect = document.getElementById('name-select');
-        var name = nameSelect.value;
-        if (!name) {
-          alert('名前を選択してください。');
-          return; // 名前が選択されていない場合はここで処理を中止
-        }
-        var name = nameSelect.value === 'その他' ? document.getElementById('other-name-input').value : nameSelect.value;
-        var comment = document.getElementById('comment-input').value;
-        var preferredDates = Array.from(document.querySelectorAll('.preferred .date.bg-yellow-300')).map(el => el.textContent.trim()).join(', ');
-        var notPreferredDates = Array.from(document.querySelectorAll('.not-preferred .date.bg-yellow-300')).map(el => el.textContent.trim()).join(', ');
-        var email = document.getElementById('email-input').value;
-
-        // EmailJSを使用してメールを送信
-        console.log(preferredDates, notPreferredDates);
-        emailjs.send("service_v7cenku", "template_rm69kao", {
-            "name": name,
-            "comment": comment,
-            "preferred_dates": preferredDates,
-            "not_preferred_dates": notPreferredDates,
-            "email": email
-        }).then(function(response) {
-            alert(`送信できました，ありがとうございます！\n回答者の名前: ${name}\nコメント: ${comment}\n希望日: ${preferredDates}\n希望しない日: ${notPreferredDates}`);
-  }, function(error) {
-        }, function(error) {
-            alert('送信失敗．もう一度試しても失敗する場合はrosai041321@gmail.comに連絡をください: ' + error);
-        });
-    });
-});
-</script>
-
-    <div class="mb-8">
-      <span class="step-button">STEP 2</span>
-      <p class="text-gray-700 text-sm mt-2">希望日を選択してください．※土曜日直について　金曜当直が外勤医師の場合，8:00開始となります．</p>
-      <div class="mt-2 p-4 border border-gray-300 rounded preferred bg-white">
-        <div class="flex justify-between items-center mb-4">
-          <button class="prev-month"><i class="fas fa-chevron-left"></i></button>
-          <span class="month-title font-bold">2023年 12月</span>
-          <button class="next-month"><i class="fas fa-chevron-right"></i></button>
+    <div class="bg-white rounded-lg shadow p-6 space-y-8">
+      <!-- Step 1: 名前選択 -->
+      <div>
+        <div class="step-header">
+          <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">STEP 1</span>
+          <h2 class="font-bold mt-2">回答者の選択</h2>
         </div>
-        <div class="grid grid-cols-7 gap-1 calendar-grid">
-          <!-- Calendar days will be generated by JavaScript -->
-        </div>
+        <select id="name-select" class="mt-2 w-full p-2 border rounded">
+          <option value="">回答者の名前を選択してください(敬称略)</option>
+          <option value="西中川">西中川</option>
+          <option value="大場">大場</option>
+          <option value="荻野">荻野</option>
+          <!-- 他の名前オプション -->
+          <option value="その他">その他</option>
+        </select>
+        <input id="other-name-input" type="text" class="mt-2 w-full p-2 border rounded hidden" placeholder="名前を入力してください">
       </div>
-    </div>
 
-    <div class="mb-8">
-      <span class="step-button">STEP 3</span>
-      <p class="text-gray-700 text-sm mt-2">希望しない日を選択してください(翌日外勤・外来でできない場合も含む）※土曜日直について　金曜当直が外勤医師の場合，8:00開始となります.</p>
-      <div class="mt-2 p-4 border border-gray-300 rounded not-preferred bg-white">
-        <div class="flex justify-between items-center mb-4">
-          <button class="prev-month"><i class="fas fa-chevron-left"></i></button>
-          <span class="month-title font-bold">2023年 12月</span>
-          <button class="next-month"><i class="fas fa-chevron-right"></i></button>
+      <!-- Step 2: カレンダー -->
+      <div>
+        <div class="step-header">
+          <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">STEP 2</span>
+          <p class="text-sm text-gray-600 mt-2">奇数週水曜と木曜日以外で希望日を選択してください</p>
         </div>
-        <div class="grid grid-cols-7 gap-1 calendar-grid">
-          <!-- Calendar days will be generated by JavaScript -->
-        </div>
+        <div id="calendar" class="mt-4"></div>
       </div>
-    </div>
-
-    <div class="mb-8">
-      <span class="step-button">STEP 4</span>
-      <p class="text-gray-700 text-sm mt-2">コメントを追加してください（任意）</p>
-    <textarea id="comment-input" class="mt-2 p-2 border border-gray-300 rounded w-full" placeholder="コメント"></textarea>
-    </div>
-    <div class="mb-8">
-      <label for="email-input" class="block text-sm font-medium text-gray-700">メールアドレス（任意ですが，登録すると回答結果がメールで届くので，自分の回答結果をあとで確認できます．）</label>
-      <input type="email" id="email-input" name="email" placeholder="your.email@example.com" class="mt-1 p-2 border border-gray-300 rounded w-full">
-    </div>
-    <div>
-     <button id="generate-url">送信する</button>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameSelect = document.getElementById('name-select');
+      const otherNameInput = document.getElementById('other-name-input');
+
+      nameSelect.addEventListener('change', function() {
+        otherNameInput.style.display = this.value === 'その他' ? 'block' : 'none';
+      });
+
+      function createCalendar(year, month) {
+        const calendar = document.createElement('div');
+        calendar.className = 'calendar-container';
+
+        // 月表示
+        const monthTitle = document.createElement('div');
+        monthTitle.className = 'month-title';
+        monthTitle.textContent = `${year}年 ${month + 1}月`;
+        calendar.appendChild(monthTitle);
+
+        // カレンダーグリッド
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+
+        // 曜日ヘッダー
+        const days = ['日', '月', '火', '水', '木', '金', '土'];
+        days.forEach((day, index) => {
+          const dayHeader = document.createElement('div');
+          dayHeader.className = 'calendar-header';
+          if (index === 0) dayHeader.classList.add('sunday');
+          if (index === 6) dayHeader.classList.add('saturday');
+          dayHeader.textContent = day;
+          grid.appendChild(dayHeader);
+        });
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const newYearStart = new Date(2024, 11, 28); // 2024/12/28
+        const newYearEnd = new Date(2025, 0, 5);    // 2025/1/5
+
+        // 空セル追加
+        for (let i = 0; i < firstDay.getDay(); i++) {
+          const emptyCell = document.createElement('div');
+          emptyCell.className = 'calendar-cell';
+          grid.appendChild(emptyCell);
+        }
+
+        // 日付セル追加
+        for (let date = 1; date <= lastDay.getDate(); date++) {
+          const cell = document.createElement('div');
+          cell.className = 'calendar-cell';
+          const currentDate = new Date(year, month, date);
+          
+          // 年末年始チェック
+          if (currentDate >= newYearStart && currentDate <= newYearEnd) {
+            cell.classList.add('new-year');
+            cell.title = '年末年始期間のため選択できません';
+          }
+
+          // 木曜日チェック
+          if (currentDate.getDay() === 4) {
+            cell.classList.add('disabled');
+            cell.title = '木曜日は循環器医師担当です';
+          }
+
+          // 奇数週水曜日チェック
+          if (currentDate.getDay() === 3) {
+            const weekNum = Math.ceil(date / 7);
+            if (weekNum % 2 === 1) {
+              cell.classList.add('disabled');
+              cell.title = '奇数週の水曜日は選択できません';
+            }
+          }
+
+          // 週末の色付け
+          if (currentDate.getDay() === 0) cell.classList.add('sunday');
+          if (currentDate.getDay() === 6) cell.classList.add('saturday');
+
+          cell.textContent = date;
+
+          // クリックイベント
+          if (!cell.classList.contains('disabled') && !cell.classList.contains('new-year')) {
+            cell.addEventListener('click', function() {
+              this.classList.toggle('selected');
+            });
+          }
+
+          grid.appendChild(cell);
+        }
+
+        calendar.appendChild(grid);
+        return calendar;
+      }
+
+      // カレンダー表示
+      const calendarContainer = document.getElementById('calendar');
+      calendarContainer.appendChild(createCalendar(2024, 11)); // 2024年12月
+    });
+  </script>
 </body>
 </html>
