@@ -54,15 +54,10 @@
             font-size: 1.2rem;
             color: #2f6a2f;
         }
-        .result {
+        .salary-result {
             font-size: 1rem;
             color: blue;
             margin-left: 10px;
-        }
-        .note {
-            font-size: 0.9rem;
-            color: red;
-            margin-top: -10px;
         }
         canvas {
             margin-top: 20px;
@@ -76,36 +71,23 @@
             <label for="years">年目 (x)</label>
             <div style="display: flex; align-items: center;">
                 <input type="number" id="years" name="years" required placeholder="例: 5" oninput="updateSalaryResult()">
-                <span id="salary-result" class="result"></span>
+                <span id="salary-result" class="salary-result"></span>
             </div>
 
             <label for="dependents">扶養手当対象者の人数 (b)</label>
-            <div style="display: flex; align-items: center;">
-                <input type="number" id="dependents" name="dependents" required placeholder="例: 2" oninput="updateDependentResult()">
-                <span id="dependent-result" class="result"></span>
-            </div>
+            <input type="number" id="dependents" name="dependents" required placeholder="例: 2">
 
             <label for="housing">住居手当 (c)</label>
-            <div style="display: flex; align-items: center;">
-                <select id="housing" name="housing" onchange="updateHousingResult()">
-                    <option value="28000">あり</option>
-                    <option value="0">なし</option>
-                </select>
-                <span id="housing-result" class="result"></span>
-            </div>
+            <select id="housing" name="housing">
+                <option value="28000">あり</option>
+                <option value="0">なし</option>
+            </select>
 
             <label for="overtime">残業平均時間 (d)</label>
-            <div style="display: flex; align-items: center;">
-                <input type="number" id="overtime" name="overtime" required placeholder="例: 10" oninput="updateOvertimeResult()">
-                <span id="overtime-result" class="result"></span>
-            </div>
-            <div class="note">平日22:00までに残業したものと計算しています。</div>
+            <input type="number" id="overtime" name="overtime" required placeholder="例: 10">
 
             <label for="night-duty">日当直回数 (e)</label>
-            <div style="display: flex; align-items: center;">
-                <input type="number" id="night-duty" name="night-duty" required placeholder="例: 3" oninput="updateNightDutyResult()">
-                <span id="night-duty-result" class="result"></span>
-            </div>
+            <input type="number" id="night-duty" name="night-duty" required placeholder="例: 3">
 
             <label for="position-allowance">職務手当 (f)</label>
             <select id="position-allowance" name="position-allowance">
@@ -123,6 +105,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function getSalaryFromYears(years) {
+            // 年次ごとの俸給データ
             const salaryTable = {
                 3: 292500, 4: 301200, 5: 312500, 6: 324300, 7: 336100,
                 8: 349700, 9: 361800, 10: 374200, 11: 387200, 12: 400000,
@@ -131,7 +114,7 @@
                 23: 515500, 24: 525000, 25: 534500, 26: 552900, 27: 560000,
                 28: 565300, 29: 571500
             };
-            return salaryTable[years] || 0;
+            return salaryTable[years] || 0; // 該当年がなければ0を返す
         }
 
         function updateSalaryResult() {
@@ -143,34 +126,6 @@
             } else {
                 resultElement.textContent = "";
             }
-        }
-
-        function updateDependentResult() {
-            const dependents = parseInt(document.getElementById('dependents').value);
-            const resultElement = document.getElementById('dependent-result');
-            resultElement.textContent = `b × 6500 = ¥${(dependents * 6500).toLocaleString()}`;
-        }
-
-        function updateHousingResult() {
-            const housing = parseInt(document.getElementById('housing').value);
-            const resultElement = document.getElementById('housing-result');
-            resultElement.textContent = `c = ¥${housing.toLocaleString()}`;
-        }
-
-        function updateOvertimeResult() {
-            const overtime = parseFloat(document.getElementById('overtime').value);
-            const years = parseInt(document.getElementById('years').value);
-            const salary = getSalaryFromYears(years);
-            const base = Math.ceil(salary * 1.12 + 184700);
-            const overtimePay = Math.ceil(1.25 * overtime * base / 162);
-            const resultElement = document.getElementById('overtime-result');
-            resultElement.textContent = `残業計算: ¥${overtimePay.toLocaleString()}`;
-        }
-
-        function updateNightDutyResult() {
-            const nightDuty = parseInt(document.getElementById('night-duty').value);
-            const resultElement = document.getElementById('night-duty-result');
-            resultElement.textContent = `e × 21000 = ¥${(nightDuty * 21000).toLocaleString()}`;
         }
 
         function calculateSalary() {
@@ -193,14 +148,50 @@
                 labels.push(`${years + i}年目`);
             }
 
+            // 最初の年の結果を出力
             const outputDiv = document.getElementById('output');
             outputDiv.textContent = `予想月給: ¥${salaries[0].toLocaleString()}`;
             outputDiv.style.display = 'block';
 
+            // グラフを描画
             const ctx = document.getElementById('salaryChart').getContext('2d');
             document.getElementById('salaryChart').style.display = 'block';
             new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets:
+                    datasets: [{
+                        label: '予想月給',
+                        data: salaries,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年数'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '月給 (円)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
