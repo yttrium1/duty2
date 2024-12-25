@@ -60,8 +60,8 @@
     <div class="container">
         <h1>給与計算</h1>
         <form id="salary-form">
-            <label for="salary">俸給 (a)</label>
-            <input type="number" id="salary" name="salary" required placeholder="例: 300000">
+            <label for="years">年目 (x)</label>
+            <input type="number" id="years" name="years" required placeholder="例: 5">
 
             <label for="dependents">扶養手当対象者の人数 (b)</label>
             <input type="number" id="dependents" name="dependents" required placeholder="例: 2">
@@ -91,8 +91,20 @@
     </div>
 
     <script>
+        function getSalaryFromYears(years) {
+            // 医師俸給表に基づく俸給計算
+            if (years >= 3 && years <= 7) {
+                return 292400 + (years - 3) * 8800; // 医事号俸
+            } else if (years >= 8) {
+                return 361700 + (years - 8) * 8800; // 医長号俸
+            } else {
+                return 0; // 範囲外
+            }
+        }
+
         function calculateSalary() {
-            const salary = parseFloat(document.getElementById('salary').value);
+            const years = parseInt(document.getElementById('years').value);
+            const salary = getSalaryFromYears(years);
             const dependents = parseFloat(document.getElementById('dependents').value);
             const housing = parseFloat(document.getElementById('housing').value);
             const overtime = parseFloat(document.getElementById('overtime').value);
