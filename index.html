@@ -105,14 +105,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function getSalaryFromYears(years) {
-            // 医師俸給表に基づく俸給計算
-            if (years >= 3 && years <= 7) {
-                return 292400 + (years - 3) * 8800; // 医事号俸
-            } else if (years >= 8) {
-                return 361700 + (years - 8) * 8800; // 医長号俸
-            } else {
-                return 0; // 範囲外
-            }
+            // 年次ごとの俸給データ
+            const salaryTable = {
+                3: 292500, 4: 301200, 5: 312500, 6: 324300, 7: 336100,
+                8: 349700, 9: 361800, 10: 374200, 11: 387200, 12: 400000,
+                13: 412500, 14: 424100, 15: 435300, 16: 446500, 17: 457700,
+                18: 467700, 19: 477500, 20: 487000, 21: 496500, 22: 506000,
+                23: 515500, 24: 525000, 25: 534500, 26: 552900, 27: 560000,
+                28: 565300, 29: 571500
+            };
+            return salaryTable[years] || 0; // 該当年がなければ0を返す
         }
 
         function updateSalaryResult() {
@@ -140,7 +142,7 @@
             for (let i = 0; i <= 10; i++) {
                 const salary = getSalaryFromYears(years + i);
                 const base = Math.ceil((salary + dependents * 6500) * 1.12);
-                const overtimePay = Math.ceil(overtime * (base + 184700) / 162);
+                const overtimePay = Math.ceil(1.25 * overtime * (base + 184700) / 162);
                 const total = Math.ceil(base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance);
                 salaries.push(total);
                 labels.push(`${years + i}年目`);
@@ -148,7 +150,7 @@
 
             // 最初の年の結果を出力
             const outputDiv = document.getElementById('output');
-            outputDiv.textContent = `初年度計算結果: ¥${salaries[0].toLocaleString()}`;
+            outputDiv.textContent = `予想月給: ¥${salaries[0].toLocaleString()}`;
             outputDiv.style.display = 'block';
 
             // グラフを描画
