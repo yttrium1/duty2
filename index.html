@@ -12,7 +12,7 @@
             padding: 0;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 50px auto;
             padding: 20px;
             background: #ffffff;
@@ -54,6 +54,9 @@
             font-size: 1.2rem;
             color: #2f6a2f;
         }
+        canvas {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -88,8 +91,10 @@
             <button type="button" onclick="calculateSalary()">計算する</button>
         </form>
         <div id="output" class="output" style="display: none;"></div>
+        <canvas id="salaryChart" width="800" height="400" style="display: none;"></canvas>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function getSalaryFromYears(years) {
             // 医師俸給表に基づく俸給計算
@@ -104,22 +109,67 @@
 
         function calculateSalary() {
             const years = parseInt(document.getElementById('years').value);
-            const salary = getSalaryFromYears(years);
             const dependents = parseFloat(document.getElementById('dependents').value);
             const housing = parseFloat(document.getElementById('housing').value);
             const overtime = parseFloat(document.getElementById('overtime').value);
             const nightDuty = parseFloat(document.getElementById('night-duty').value);
             const positionAllowance = parseFloat(document.getElementById('position-allowance').value);
 
-            // 計算式: (a + b * 6500) * 1.12 + c + 184700 + d * ((a * 1.12 + 184700) / 162) + e * 21000 + f
-            const base = (salary + dependents * 6500) * 1.12;
-            const overtimePay = overtime * (base + 184700) / 162;
-            const total = base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance;
+            const salaries = [];
+            const labels = [];
 
-            // 出力結果を表示
+            for (let i = 0; i <= 10; i++) {
+                const salary = getSalaryFromYears(years + i);
+                const base = (salary + dependents * 6500) * 1.12;
+                const overtimePay = overtime * (base + 184700) / 162;
+                const total = base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance;
+                salaries.push(total);
+                labels.push(`${years + i}年目`);
+            }
+
+            // 最初の年の結果を出力
             const outputDiv = document.getElementById('output');
-            outputDiv.textContent = `計算結果: ¥${total.toLocaleString()}`;
+            outputDiv.textContent = `初年度計算結果: ¥${salaries[0].toLocaleString()}`;
             outputDiv.style.display = 'block';
+
+            // グラフを描画
+            const ctx = document.getElementById('salaryChart').getContext('2d');
+            document.getElementById('salaryChart').style.display = 'block';
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '予想月給',
+                        data: salaries,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年数'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '月給 (円)'
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
