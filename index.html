@@ -1,199 +1,114 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>内科当直希望登録</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: #f3f4f6;
-    }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 1px;
-      background-color: #e5e7eb;
-      border: 1px solid #d1d5db;
-      margin-top: 1rem;
-    }
-    .calendar-header {
-      background-color: #f9fafb;
-      padding: 0.5rem;
-      text-align: center;
-      font-weight: bold;
-    }
-    .calendar-cell {
-      background-color: white;
-      padding: 0.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .calendar-cell:hover:not(.disabled):not(.new-year) {
-      background-color: #fef3c7;
-    }
-    .calendar-cell.selected {
-      background-color: #fde68a;
-    }
-    .sunday {
-      color: #dc2626;
-    }
-    .saturday {
-      color: #2563eb;
-    }
-    .disabled {
-      background-color: #e5e7eb;
-      color: #9ca3af;
-      cursor: not-allowed;
-    }
-    .new-year {
-      background-color: #fee2e2;
-      color: #dc2626;
-      cursor: not-allowed;
-    }
-    .month-title {
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin: 1rem 0;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>給与計算サイト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e7f4e4;
+            border: 1px solid #b2d8b2;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            color: #2f6a2f;
+        }
+    </style>
 </head>
 <body>
-  <div class="max-w-4xl mx-auto p-4">
-    <h1 class="text-2xl font-bold text-center mb-8">内科当直希望登録</h1>
+    <div class="container">
+        <h1>給与計算</h1>
+        <form id="salary-form">
+            <label for="salary">俸給 (a)</label>
+            <input type="number" id="salary" name="salary" required placeholder="例: 300000">
 
-    <div class="bg-white rounded-lg shadow p-6 space-y-8">
-      <!-- Step 1: 名前選択 -->
-      <div>
-        <div class="step-header">
-          <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">STEP 1</span>
-          <h2 class="font-bold mt-2">回答者の選択</h2>
-        </div>
-        <select id="name-select" class="mt-2 w-full p-2 border rounded">
-          <option value="">回答者の名前を選択してください(敬称略)</option>
-          <option value="西中川">西中川</option>
-          <option value="大場">大場</option>
-          <option value="荻野">荻野</option>
-          <!-- 他の名前オプション -->
-          <option value="その他">その他</option>
-        </select>
-        <input id="other-name-input" type="text" class="mt-2 w-full p-2 border rounded hidden" placeholder="名前を入力してください">
-      </div>
+            <label for="dependents">扶養手当対象者の人数 (b)</label>
+            <input type="number" id="dependents" name="dependents" required placeholder="例: 2">
 
-      <!-- Step 2: カレンダー -->
-      <div>
-        <div class="step-header">
-          <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">STEP 2</span>
-          <p class="text-sm text-gray-600 mt-2">奇数週水曜と木曜日以外で希望日を選択してください</p>
-        </div>
-        <div id="calendar" class="mt-4"></div>
-      </div>
+            <label for="housing">住居手当 (c)</label>
+            <select id="housing" name="housing">
+                <option value="28000">あり</option>
+                <option value="0">なし</option>
+            </select>
+
+            <label for="overtime">残業平均時間 (d)</label>
+            <input type="number" id="overtime" name="overtime" required placeholder="例: 10">
+
+            <label for="night-duty">日当直回数 (e)</label>
+            <input type="number" id="night-duty" name="night-duty" required placeholder="例: 3">
+
+            <label for="position-allowance">職務手当 (f)</label>
+            <select id="position-allowance" name="position-allowance">
+                <option value="80000">副部長</option>
+                <option value="95000">部長</option>
+                <option value="0">なし</option>
+            </select>
+
+            <button type="button" onclick="calculateSalary()">計算する</button>
+        </form>
+        <div id="output" class="output" style="display: none;"></div>
     </div>
-  </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const nameSelect = document.getElementById('name-select');
-      const otherNameInput = document.getElementById('other-name-input');
+    <script>
+        function calculateSalary() {
+            const salary = parseFloat(document.getElementById('salary').value);
+            const dependents = parseFloat(document.getElementById('dependents').value);
+            const housing = parseFloat(document.getElementById('housing').value);
+            const overtime = parseFloat(document.getElementById('overtime').value);
+            const nightDuty = parseFloat(document.getElementById('night-duty').value);
+            const positionAllowance = parseFloat(document.getElementById('position-allowance').value);
 
-      nameSelect.addEventListener('change', function() {
-        otherNameInput.style.display = this.value === 'その他' ? 'block' : 'none';
-      });
+            // 計算式: (a + b) * 1.12 + c + 184700 + d * ((a * 1.12 + 184700) / 162) + e * 21000 + f
+            const base = (salary + dependents) * 1.12;
+            const overtimePay = overtime * (base + 184700) / 162;
+            const total = base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance;
 
-      function createCalendar(year, month) {
-        const calendar = document.createElement('div');
-        calendar.className = 'calendar-container';
-
-        // 月表示
-        const monthTitle = document.createElement('div');
-        monthTitle.className = 'month-title';
-        monthTitle.textContent = `${year}年 ${month + 1}月`;
-        calendar.appendChild(monthTitle);
-
-        // カレンダーグリッド
-        const grid = document.createElement('div');
-        grid.className = 'calendar-grid';
-
-        // 曜日ヘッダー
-        const days = ['日', '月', '火', '水', '木', '金', '土'];
-        days.forEach((day, index) => {
-          const dayHeader = document.createElement('div');
-          dayHeader.className = 'calendar-header';
-          if (index === 0) dayHeader.classList.add('sunday');
-          if (index === 6) dayHeader.classList.add('saturday');
-          dayHeader.textContent = day;
-          grid.appendChild(dayHeader);
-        });
-
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const newYearStart = new Date(2024, 11, 28); // 2024/12/28
-        const newYearEnd = new Date(2025, 0, 5);    // 2025/1/5
-
-        // 空セル追加
-        for (let i = 0; i < firstDay.getDay(); i++) {
-          const emptyCell = document.createElement('div');
-          emptyCell.className = 'calendar-cell';
-          grid.appendChild(emptyCell);
+            // 出力結果を表示
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = `計算結果: ¥${total.toLocaleString()}`;
+            outputDiv.style.display = 'block';
         }
-
-        // 日付セル追加
-        for (let date = 1; date <= lastDay.getDate(); date++) {
-          const cell = document.createElement('div');
-          cell.className = 'calendar-cell';
-          const currentDate = new Date(year, month, date);
-          
-          // 年末年始チェック
-          if (currentDate >= newYearStart && currentDate <= newYearEnd) {
-            cell.classList.add('new-year');
-            cell.title = '年末年始期間のため選択できません';
-          }
-
-          // 木曜日チェック
-          if (currentDate.getDay() === 4) {
-            cell.classList.add('disabled');
-            cell.title = '木曜日は循環器医師担当です';
-          }
-
-          // 奇数週水曜日チェック
-          if (currentDate.getDay() === 3) {
-            const weekNum = Math.ceil(date / 7);
-            if (weekNum % 2 === 1) {
-              cell.classList.add('disabled');
-              cell.title = '奇数週の水曜日は選択できません';
-            }
-          }
-
-          // 週末の色付け
-          if (currentDate.getDay() === 0) cell.classList.add('sunday');
-          if (currentDate.getDay() === 6) cell.classList.add('saturday');
-
-          cell.textContent = date;
-
-          // クリックイベント
-          if (!cell.classList.contains('disabled') && !cell.classList.contains('new-year')) {
-            cell.addEventListener('click', function() {
-              this.classList.toggle('selected');
-            });
-          }
-
-          grid.appendChild(cell);
-        }
-
-        calendar.appendChild(grid);
-        return calendar;
-      }
-
-      // カレンダー表示
-      const calendarContainer = document.getElementById('calendar');
-      calendarContainer.appendChild(createCalendar(2024, 11)); // 2024年12月
-    });
-  </script>
+    </script>
 </body>
 </html>
