@@ -54,6 +54,11 @@
             font-size: 1.2rem;
             color: #2f6a2f;
         }
+        .salary-result {
+            font-size: 1rem;
+            color: blue;
+            margin-left: 10px;
+        }
         canvas {
             margin-top: 20px;
         }
@@ -64,7 +69,10 @@
         <h1>給与計算</h1>
         <form id="salary-form">
             <label for="years">年目 (x)</label>
-            <input type="number" id="years" name="years" required placeholder="例: 5">
+            <div style="display: flex; align-items: center;">
+                <input type="number" id="years" name="years" required placeholder="例: 5" oninput="updateSalaryResult()">
+                <span id="salary-result" class="salary-result"></span>
+            </div>
 
             <label for="dependents">扶養手当対象者の人数 (b)</label>
             <input type="number" id="dependents" name="dependents" required placeholder="例: 2">
@@ -107,6 +115,17 @@
             }
         }
 
+        function updateSalaryResult() {
+            const years = parseInt(document.getElementById('years').value);
+            const salary = getSalaryFromYears(years);
+            const resultElement = document.getElementById('salary-result');
+            if (salary > 0) {
+                resultElement.textContent = `俸給: ¥${Math.ceil(salary).toLocaleString()}`;
+            } else {
+                resultElement.textContent = "";
+            }
+        }
+
         function calculateSalary() {
             const years = parseInt(document.getElementById('years').value);
             const dependents = parseFloat(document.getElementById('dependents').value);
@@ -120,9 +139,9 @@
 
             for (let i = 0; i <= 10; i++) {
                 const salary = getSalaryFromYears(years + i);
-                const base = (salary + dependents * 6500) * 1.12;
-                const overtimePay = overtime * (base + 184700) / 162;
-                const total = base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance;
+                const base = Math.ceil((salary + dependents * 6500) * 1.12);
+                const overtimePay = Math.ceil(overtime * (base + 184700) / 162);
+                const total = Math.ceil(base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance);
                 salaries.push(total);
                 labels.push(`${years + i}年目`);
             }
