@@ -99,8 +99,8 @@
             const nightDuty = parseFloat(document.getElementById('night-duty').value);
             const positionAllowance = parseFloat(document.getElementById('position-allowance').value);
 
-            // 計算式: (a + b) * 1.12 + c + 184700 + d * ((a * 1.12 + 184700) / 162) + e * 21000 + f
-            const base = (salary + dependents) * 1.12;
+            // 計算式: (a + b * 6500) * 1.12 + c + 184700 + d * ((a * 1.12 + 184700) / 162) + e * 21000 + f
+            const base = (salary + dependents * 6500) * 1.12;
             const overtimePay = overtime * (base + 184700) / 162;
             const total = base + housing + 184700 + overtimePay + (nightDuty * 21000) + positionAllowance;
 
