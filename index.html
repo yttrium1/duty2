@@ -6,17 +6,68 @@
    <title>給与計算サイト</title>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
    <style>
-       body { font-family: sans-serif; background: #f3f4f6; margin: 0; padding: 1rem; }
-       .container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 8px; }
-       h1 { text-align: center; color: #111; margin-bottom: 2rem; }
-       .form-group { margin-bottom: 1rem; }
-       label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-       input, select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
-       button { width: 100%; padding: 0.75rem; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; }
-       button:hover { background: #1d4ed8; }
-       .error { color: red; font-size: 0.875rem; margin-top: 0.25rem; }
-       .result { margin-top: 2rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }
-       .chart-container { margin-top: 2rem; }
+       body { 
+           font-family: sans-serif; 
+           background: #f3f4f6; 
+           margin: 0; 
+           padding: 1rem; 
+       }
+       .container { 
+           max-width: 800px; 
+           margin: 2rem auto; 
+           padding: 2rem; 
+           background: white; 
+           box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+           border-radius: 8px; 
+       }
+       h1 { 
+           text-align: center; 
+           color: #111; 
+           margin-bottom: 2rem; 
+       }
+       .form-group { 
+           margin-bottom: 1rem; 
+       }
+       label { 
+           display: block; 
+           margin-bottom: 0.5rem; 
+           font-weight: bold; 
+       }
+       input, select { 
+           width: 100%; 
+           padding: 0.5rem; 
+           border: 1px solid #ddd; 
+           border-radius: 4px; 
+       }
+       button { 
+           width: 100%; 
+           padding: 0.75rem; 
+           background: #2563eb; 
+           color: white; 
+           border: none; 
+           border-radius: 4px; 
+           cursor: pointer; 
+       }
+       button:hover { 
+           background: #1d4ed8; 
+       }
+       .error { 
+           color: red; 
+           font-size: 0.875rem; 
+           margin-top: 0.25rem; 
+       }
+       .result { 
+           margin-top: 2rem; 
+           padding: 1rem; 
+           border: 1px solid #ddd; 
+           border-radius: 4px; 
+       }
+       .chart-container { 
+           margin-top: 2rem; 
+           padding: 1rem;
+           border: 1px solid #ddd;
+           border-radius: 4px;
+       }
    </style>
 </head>
 <body>
@@ -70,7 +121,13 @@
        <div id="result" class="result" style="display:none"></div>
        
        <div class="chart-container">
-           <canvas id="salaryChart"></canvas>
+           <h3>月給推移</h3>
+           <canvas id="monthlyChart"></canvas>
+       </div>
+
+       <div class="chart-container">
+           <h3>年収推移</h3>
+           <canvas id="annualChart"></canvas>
        </div>
    </div>
 
@@ -84,7 +141,8 @@
            28: 565300, 29: 571500
        };
 
-       let chart = null;
+       let monthlyChart = null;
+       let annualChart = null;
 
        function calculateSalary(years, dependents, housing, overtime, nightDuty, position) {
            const baseSalary = salaryTable[years];
@@ -114,13 +172,7 @@
            };
        }
 
-       function updateChart(years, dependents, housing, overtime, nightDuty, position) {
-           const ctx = document.getElementById('salaryChart').getContext('2d');
-           
-           if (chart) {
-               chart.destroy();
-           }
-
+       function updateCharts(years, dependents, housing, overtime, nightDuty, position) {
            const labels = [];
            const monthlyData = [];
            const annualData = [];
@@ -135,35 +187,84 @@
                }
            }
 
-           chart = new Chart(ctx, {
+           // 月収グラフ
+           const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+           if (monthlyChart) {
+               monthlyChart.destroy();
+           }
+           monthlyChart = new Chart(monthlyCtx, {
                type: 'line',
                data: {
                    labels: labels,
-                   datasets: [
-                       {
-                           label: '予想月給',
-                           data: monthlyData,
-                           borderColor: '#2563eb',
-                           backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                           tension: 0.4
-                       },
-                       {
-                           label: '想定年収',
-                           data: annualData,
-                           borderColor: '#059669',
-                           backgroundColor: 'rgba(5, 150, 105, 0.1)',
-                           tension: 0.4
-                       }
-                   ]
+                   datasets: [{
+                       label: '予想月給',
+                       data: monthlyData,
+                       borderColor: '#2563eb',
+                       backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                       tension: 0.4,
+                       fill: true
+                   }]
                },
                options: {
                    responsive: true,
+                   plugins: {
+                       legend: {
+                           display: false
+                       }
+                   },
                    scales: {
                        y: {
                            beginAtZero: false,
                            title: {
                                display: true,
-                               text: '給与 (円)'
+                               text: '月給 (円)'
+                           },
+                           ticks: {
+                               callback: function(value) {
+                                   return '¥' + value.toLocaleString();
+                               }
+                           }
+                       }
+                   }
+               }
+           });
+
+           // 年収グラフ
+           const annualCtx = document.getElementById('annualChart').getContext('2d');
+           if (annualChart) {
+               annualChart.destroy();
+           }
+           annualChart = new Chart(annualCtx, {
+               type: 'line',
+               data: {
+                   labels: labels,
+                   datasets: [{
+                       label: '想定年収',
+                       data: annualData,
+                       borderColor: '#059669',
+                       backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                       tension: 0.4,
+                       fill: true
+                   }]
+               },
+               options: {
+                   responsive: true,
+                   plugins: {
+                       legend: {
+                           display: false
+                       }
+                   },
+                   scales: {
+                       y: {
+                           beginAtZero: false,
+                           title: {
+                               display: true,
+                               text: '年収 (円)'
+                           },
+                           ticks: {
+                               callback: function(value) {
+                                   return '¥' + value.toLocaleString();
+                               }
                            }
                        }
                    }
@@ -201,7 +302,7 @@
                </ul>
            `;
 
-           updateChart(years, dependents, housing, overtime, nightDuty, position);
+           updateCharts(years, dependents, housing, overtime, nightDuty, position);
        });
    </script>
 </body>
